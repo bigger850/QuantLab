@@ -1,0 +1,61 @@
+server:
+  port: 8080
+  shutdown: graceful
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 20
+
+spring:
+  application:
+    name: quantlab
+  profiles:
+    active: dev
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: non_null
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+
+quant:
+  # 行情同步的标的范围：STOCK=个股, ETF=场内基金, INDEX=指数
+  sync:
+    enabled: true
+    include-types: STOCK,ETF
+    # 首次全量同步的起始日期
+    history-start: 2018-01-01
+    # 拉取并发度
+    fetch-concurrency: 2
+    # 每只标的两次请求的最小间隔（毫秒）。免费源对批量抓取有 IP 级限流，
+    # 实测 30ms 触发封禁，800ms 可长时间稳定运行。
+    request-interval-ms: 800
+  backtest:
+    default-init-cash: 1000000
+    # 单次回测允许的最大K线根数
+    max-bars: 20000
+
+logging:
+  level:
+    root: INFO
+    com.quantlab: DEBUG
